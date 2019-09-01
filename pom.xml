@@ -56,7 +56,8 @@
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jdk-version>1.8</jdk-version>
+        <short-jdk-version>8</short-jdk-version>
+        <jdk-version>1.${short-jdk-version}</jdk-version>
 
         <!-- versions -->
         <zookeeper-version>3.5.4-beta</zookeeper-version>
@@ -138,23 +139,23 @@
     <mailingLists>
         <mailingList>
             <name>Users</name>
-            <post>user@curator.apache.org</post>
-            <subscribe>user-subscribe@curator.apache.org</subscribe>
-            <unsubscribe>user-unsubscribe@curator.apache.org</unsubscribe>
+            <subscribe>mailto:user-subscribe@curator.apache.org</subscribe>
+            <unsubscribe>mailto:user-unsubscribe@curator.apache.org</unsubscribe>
+            <post>mailto:user@curator.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/curator-user/</archive>
         </mailingList>
         <mailingList>
             <name>Development</name>
-            <post>dev@curator.apache.org</post>
-            <subscribe>dev-subscribe@curator.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@curator.apache.org</unsubscribe>
+            <subscribe>mailto:dev-subscribe@curator.apache.org</subscribe>
+            <unsubscribe>mailto:dev-unsubscribe@curator.apache.org</unsubscribe>
+            <post>mailto:dev@curator.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/curator-dev/</archive>
         </mailingList>
         <mailingList>
             <name>Commits</name>
-            <post>commits@curator.apache.org</post>
-            <subscribe>commits-subscribe@curator.apache.org</subscribe>
-            <unsubscribe>commits-unsubscribe@curator.apache.org</unsubscribe>
+            <subscribe>mailto:commits-subscribe@curator.apache.org</subscribe>
+            <unsubscribe>mailto:commits-unsubscribe@curator.apache.org</unsubscribe>
+            <post>mailto:commits@curator.apache.org</post>
             <archive>http://mail-archives.apache.org/mod_mbox/curator-commits/</archive>
         </mailingList>
     </mailingLists>
@@ -665,15 +666,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${jdk-version}</source>
-                    <target>${jdk-version}</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -850,7 +842,7 @@
                 <artifactId>clirr-maven-plugin</artifactId>
                 <configuration>
                     <failOnError>false</failOnError>
-                    <logResults>true</logResults>
+                    <logResults>false</logResults>
                     <includes>
                         <include>org/apache/curator/**</include>
                     </includes>
@@ -919,4 +911,42 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>jdk-8-minus</id>
+            <activation>
+                <jdk>(,1.8]</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>${jdk-version}</source>
+                            <target>${jdk-version}</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk-9-plus</id>
+            <activation>
+                <jdk>[1.9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>${short-jdk-version}</release>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
